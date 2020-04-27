@@ -5,6 +5,7 @@ $:.unshift File.join(File.dirname(__FILE__), *%w[.. lib])
 require 'optparse'
 require 'rubygems'
 require 'gollum-site'
+require 'rugged'
 
 help = <<HELP
 Gollum Site is a static site generator for Gollum Wikis
@@ -22,7 +23,7 @@ Options:
 HELP
 
 options = {
-  'ref' => Grit::Repo.new('.').git.rev_parse({}, "HEAD"), # current HEAD
+  'ref' => Rugged::Repository.new('.').head.target_id,
   'working' => false,
   'base_path' => '/',
   'output_path' => '_site',

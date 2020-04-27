@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   s.add_dependency('liquid', '>= 2.2.2')
   s.add_dependency('mixlib-log', '>= 1.1.0')
   s.add_dependency('directory_watcher')
+  s.add_dependency('rugged')
 
   s.add_development_dependency('github-markdown', '~> 0.5.3')
 

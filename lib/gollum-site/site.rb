@@ -37,6 +37,9 @@ module Gollum
         if filename =~ /^_Layout.html/
           # layout
           @layouts[item.path] = ::Liquid::Template.parse(item.data)
+	# I think this is this: https://github.com/gollum/gollum-lib/blob/012b983c39a1e8211d67c5344209e4313337ebd4/lib/gollum-lib/page.rb#L42-L45
+	# @wiki.page_class isn't populated though.
+	# My guess is that gollum-lib used to let you add arbitrary dicts as attributes and now doesn't?
         elsif @wiki.page_class.valid_page_name?(filename)
           # page
           page = @wiki.page_class.new(@wiki)
@@ -143,13 +146,15 @@ module Gollum
     end
 
     def ls_files(opts)
-      opts.merge!(:z => true, :exclude_standard => true)
-      @wiki.repo.git.native(:ls_files, opts).split("\0").map {|path| decode_git_path(path) }
+      # First arg needs a regex.  Returns an array.
+      @wiki.repo.git.ls_files('.*')
     end
 
     def in_work_tree
       cwd = Dir.pwd
-      Dir.chdir(@wiki.repo.git.work_tree)
+      # Hacky way of getting the working tree.
+      # Allowed methods here: https://github.com/gollum/rugged_adapter/blob/a4171ddc83a3badf62e03a289d9d0966bdae76ab/lib/rugged_adapter/git_layer_rugged.rb#L563-L638
+      Dir.chdir(@wiki.repo.path.gsub('.git',''))
       result = yield
       Dir.chdir(cwd)
       result
